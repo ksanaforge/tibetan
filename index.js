@@ -1,2 +1,2 @@
-var TibetDoc=require("./tibetdoc")l
-module.exports={TibetDoc:TibetDoc}
+var tibetDoc=require("./tibetdoc");
+module.exports={tibetDoc:tibetDoc}
