@@ -187,18 +187,18 @@ TibetDocParse = function (D) {
 	}
 }
 
-var css =
-"\tbold { font-weight: bold }\n"
+var css ="body {font-size:150%}\n"
++"\tbold { font-weight: bold }\n"
 +"\titalic { font-style:italic }\n"
 +"\tunderline { text-decoration:underline }\n"
-+"\textra { font-size: 24pt }\n"
-+"\tvery { font-size: 18pt }\n"
-+"\tlarge { font-size: 14pt }\n"
-+"\tsmall { font-size: 10pt }\n"
-+"\tfine { font-size: 8pt }\n"
++"\textra { font-size: 180% }\n"
++"\tvery { font-size: 150% }\n"
++"\tlarge { font-size: 120% }\n"
++"\tsmall { font-size: 80% }\n"
++"\tfine { font-size: 60% }\n"
 +"\tredline { text-decoration: none; border-bottom: 1px solid red; }\n"
 +"\thilite1 { color: 'red' }\n"
-+"\thilite2 { color: \"green\" }\n"
++"\thilite2 { color: 'green' }\n"
 +"\n"
 +""
 
@@ -249,7 +249,7 @@ function TibetDocJSONToHTML_page(J) {
 						align = F[f].type
 				}
 			}
-			R.push('<p align="' + align + '">' + text)
+			R.push('<p align="' + align + '"/>' + text)
 		}
 	}
 
