@@ -97,8 +97,10 @@ TibetDocParse = function (D) {
 			fontList.push(L[2])
 		if (L[0] == '1' && L[1] == '!') {
 			L = L.slice(2)
-			s = L[0]
-			return decode(s)
+			var R = []
+			for (var i = 0; i < L.length; i++) 
+			R.push(decode(L[i]))
+			return R
 		}
 	}
 
