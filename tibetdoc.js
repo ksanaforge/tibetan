@@ -177,7 +177,7 @@ TibetDocParse = function (D) {
 			var c = s.charCodeAt(i)
 			if (c == 0x9) add_data({type:'tab'})
 			else if (c == 0xB) R.push(empty())
-			else if (c < 0x10) console.log('unkonw prefix:', c)
+			else if (c < 0x10) console.log('unknown prefix:', c)
 			else if (c <= 0x15) add_text(lookup(c, s.charCodeAt(++i)))
 			else if (c == 0x20) add_text(' ')
 			else if (c < 0x21) processFormat()
@@ -203,10 +203,12 @@ var css =
 +""
 
 formatHeader = function() {
-	return '<style>' + css + '</style>\n'
+	return '<html><meta charset="utf8"><style>' + css + '</style>\n<body>'
 }
-
 function TibetDocJSONToHTML(J) {
+	return formatHeader()+J.map(TibetDocJSONToHTML_page).join("\n")+"</body></html>";
+}
+function TibetDocJSONToHTML_page(J) {
 	var R = [], style = {}, fonts = {}
 
 	for (var i = 0; i < J.length; i++) {
@@ -247,24 +249,24 @@ function TibetDocJSONToHTML(J) {
 						align = F[f].type
 				}
 			}
-			R.push('<p align=' + align + '>' + text)
+			R.push('<p align="' + align + '">' + text)
 		}
 	}
 
-	var s = formatHeader() + R.join('')
+	var s = R.join('');
 	return s
 }
 var parseFile=function(fn) {
 	var fs=require("fs");
-	var str=fs.readFileSync(input,'binary');
+	var str=fs.readFileSync(fn,'binary');
 	return TibetDocParse(str);
 }
 var convertFile=function(input) {
 	var fs=require("fs");
 	var str=fs.readFileSync(input,'binary');
 	var data=TibetDocParse(str);
-	data = TibetDocJSONToHTML(data);
-	fs.writeFileSync(input+".html",data,"utf8");
+	html = TibetDocJSONToHTML(data);
+	fs.writeFileSync(input+".html",html.join("\n"),"utf8");
 }
 if (typeof module!="undefined") {
 	module.exports={JSONToHTML:TibetDocJSONToHTML, parse:TibetDocParse, parseFile:parseFile};
