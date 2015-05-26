@@ -268,12 +268,13 @@ var convertFile=function(input) {
 	html = TibetDocJSONToHTML(data);
 	fs.writeFileSync(input+".html",html.join("\n"),"utf8");
 }
-if (typeof module!="undefined") {
+if (typeof module!=="undefined") {
 	module.exports={JSONToHTML:TibetDocJSONToHTML, parse:TibetDocParse, parseFile:parseFile};
-	if (process.argv.length>2)	 {
+
+	if (typeof process!=="undefined" && process.argv.length>2)	 {
 		convertFile(process.argv[2]);
 	}
-
+	
 } else {
 	window.TibetDoc={Parse:TibetDocParse,JSONToHTML:TibetDocJSONToHTML};
 }

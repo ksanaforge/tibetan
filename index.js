@@ -1,2 +1,3 @@
 var tibetDoc=require("./tibetdoc");
-module.exports={tibetDoc:tibetDoc}
+var wylie=require("./wylie");
+module.exports={tibetDoc:tibetDoc,wylie:wylie}
