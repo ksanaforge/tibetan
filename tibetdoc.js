@@ -96,11 +96,8 @@ TibetDocParse = function (D) {
 		if (i > 1 && L[0] == 'hdr' && L[1] == 'desiredfont')
 			fontList.push(L[2])
 		if (L[0] == '1' && L[1] == '!') {
-			L = L.slice(2)
-			var R = []
-			for (var i = 0; i < L.length; i++) 
-				R.push(decode(L[i]))
-			return R
+			L = L.slice(2).join('\t')
+			return decode(L)
 		}
 	}
 
@@ -175,7 +172,7 @@ TibetDocParse = function (D) {
 		for (var i = 0; i < s.length; i++) {
 			var fontChanged = false
 			var c = s.charCodeAt(i)
-			if (c == 0x9) add_data({type:'tab'})
+			if (c == 0x9){ add_data({type:'tab'}) }
 			else if (c == 0xB) R.push(empty())
 			else if (c < 0x10) console.log('unknown prefix:', c)
 			else if (c <= 0x15) add_text(lookup(c, s.charCodeAt(++i)))
@@ -206,16 +203,11 @@ formatHeader = function() {
 	return '<html><meta charset="utf8"><style>' + css + '</style>\n<body>'
 }
 function TibetDocJSONToHTML(J) {
-	var R = formatHeader()+J.map(TibetDocJSONToHTML_page).join("\n")+"</body><	/html>";
-	console.log(SMALL.join(','))
+	var R = formatHeader()+TibetDocJSONToHTML_page(J)+"</body></html>";
 	return R
 }
-SMALL = []
+
 function TibetDocJSONToHTML_page(J) {
-	if (SMALL.length > 0) {
-		if (SMALL[SMALL.length-1] == 7) console.log('SEVEN=',SMALL.length)
-	}
-	SMALL.push(0)
 	var R = [], style = {}, fonts = {}
 
 	for (var i = 0; i < J.length; i++) {
@@ -233,7 +225,6 @@ function TibetDocJSONToHTML_page(J) {
 						.indexOf(F[f].type)
 					if (stl >= 0) {
 						var tag = tags[stl]
-						if (tag == 'small') SMALL[SMALL.length-1]++
 						style[F[f].type] = !style[F[f].type]
 						if (style[F[f].type]) text += '<'+tag+'>'
 						else text += '</'+tag+'>'
@@ -245,6 +236,9 @@ function TibetDocJSONToHTML_page(J) {
 					else if (F[f].type == 'size') {
 						if (F[f].begin) text += '<font style="font-size:'+F[f].size+'pt">'
 						else text += '</font>'
+					}
+					else if (F[f].type == 'tab') {
+						text += '<code>&nbsp;&nbsp;</code>'
 					}
 					else if (F[f].type == 'color') {
 						var C = parseInt(F[f].color).toString(16)
@@ -260,9 +254,7 @@ function TibetDocJSONToHTML_page(J) {
 			R.push('<p align="' + align + '"/>' + text)
 		}
 	}
-
 	var s = R.join('');
-	if (SMALL[SMALL.length -1] == 7) require('fs').writeFileSync('seven_page191.html', s)
 	return s
 }
 var parseFile=function(fn) {
@@ -275,8 +267,6 @@ var convertFile=function(input) {
 	var str=fs.readFileSync(input,'binary');
 	var data=TibetDocParse(str);
 	html = TibetDocJSONToHTML(data);
-//	console.log(html)
-//	process.exit()
 	fs.writeFileSync(input+".html",html,"utf8");
 }
 if (typeof module!=="undefined") {
