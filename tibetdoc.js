@@ -99,7 +99,7 @@ TibetDocParse = function (D) {
 			L = L.slice(2)
 			var R = []
 			for (var i = 0; i < L.length; i++) 
-			R.push(decode(L[i]))
+				R.push(decode(L[i]))
 			return R
 		}
 	}
@@ -206,9 +206,16 @@ formatHeader = function() {
 	return '<html><meta charset="utf8"><style>' + css + '</style>\n<body>'
 }
 function TibetDocJSONToHTML(J) {
-	return formatHeader()+J.map(TibetDocJSONToHTML_page).join("\n")+"</body></html>";
+	var R = formatHeader()+J.map(TibetDocJSONToHTML_page).join("\n")+"</body><	/html>";
+	console.log(SMALL.join(','))
+	return R
 }
+SMALL = []
 function TibetDocJSONToHTML_page(J) {
+	if (SMALL.length > 0) {
+		if (SMALL[SMALL.length-1] == 7) console.log('SEVEN=',SMALL.length)
+	}
+	SMALL.push(0)
 	var R = [], style = {}, fonts = {}
 
 	for (var i = 0; i < J.length; i++) {
@@ -226,6 +233,7 @@ function TibetDocJSONToHTML_page(J) {
 						.indexOf(F[f].type)
 					if (stl >= 0) {
 						var tag = tags[stl]
+						if (tag == 'small') SMALL[SMALL.length-1]++
 						style[F[f].type] = !style[F[f].type]
 						if (style[F[f].type]) text += '<'+tag+'>'
 						else text += '</'+tag+'>'
@@ -254,6 +262,7 @@ function TibetDocJSONToHTML_page(J) {
 	}
 
 	var s = R.join('');
+	if (SMALL[SMALL.length -1] == 7) require('fs').writeFileSync('seven_page191.html', s)
 	return s
 }
 var parseFile=function(fn) {
@@ -266,7 +275,9 @@ var convertFile=function(input) {
 	var str=fs.readFileSync(input,'binary');
 	var data=TibetDocParse(str);
 	html = TibetDocJSONToHTML(data);
-	fs.writeFileSync(input+".html",html.join("\n"),"utf8");
+//	console.log(html)
+//	process.exit()
+	fs.writeFileSync(input+".html",html,"utf8");
 }
 if (typeof module!=="undefined") {
 	module.exports={JSONToHTML:TibetDocJSONToHTML, parse:TibetDocParse, parseFile:parseFile};
