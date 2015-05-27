@@ -173,6 +173,7 @@ TibetDocParse = function (D) {
 			var fontChanged = false
 			var c = s.charCodeAt(i)
 			if (c == 0x9){ add_data({type:'tab'}) }
+			else if (c == 12){ add_data({type:'pagebreak'}) }
 			else if (c == 0xB) R.push(empty())
 			else if (c < 0x10) console.log('unknown prefix:', c)
 			else if (c <= 0x15) add_text(lookup(c, s.charCodeAt(++i)))
@@ -239,6 +240,9 @@ function TibetDocJSONToHTML_page(J) {
 					}
 					else if (F[f].type == 'tab') {
 						text += '<code>&nbsp;&nbsp;</code>'
+					}
+					else if (F[f].type == 'pagebreak') {
+						text += '<hr style="page-break-after:always">'
 					}
 					else if (F[f].type == 'color') {
 						var C = parseInt(F[f].color).toString(16)
