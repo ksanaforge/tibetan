@@ -242,7 +242,7 @@ function TibetDocJSONToHTML_page(J) {
 						text += '<code>&nbsp;&nbsp;</code>'
 					}
 					else if (F[f].type == 'pagebreak') {
-						text += '<hr style="page-break-after:always">'
+						text += '<hr style="page-break-after:always;margin-top:200px">'
 					}
 					else if (F[f].type == 'color') {
 						var C = parseInt(F[f].color).toString(16)
