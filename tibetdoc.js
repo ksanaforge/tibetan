@@ -80,7 +80,6 @@ var TibetDocConversionTable = [,,,,,,,,,,,,,,,,[,,,,,,,,,,,,,,,,,,,,,,,
 "ུ","ུ","ུ",,,,,,,,,,,,,,,,,,,"ཀྵྭ",,,"རྡྷྱ","ཧྣྱ"]];
 
 
-
 TibetDocConversionTable[17][32] = ' '
 // main function, provide NO extension to file name 
 
@@ -146,6 +145,10 @@ TibetDocParse = function (D) {
 		function processFormat() {
 			if (c == 25 && s.charCodeAt(i + 1) == 99) {
 				add_data({type:'color', color:parseInt(read27(), 10)})
+			} else if (c == 25 && s.charCodeAt(i + 1) == 116) {
+				// "Line indent", aka "i>>"
+				add_text(' ')
+				// add_data({type: 'tab'})
 			} else if (c == 25 && s.charCodeAt(i + 1) == 0x46) {
 				var n = read27()
 				if (n[0] == '0') add_data({
@@ -172,13 +175,13 @@ TibetDocParse = function (D) {
 		for (var i = 0; i < s.length; i++) {
 			var fontChanged = false
 			var c = s.charCodeAt(i)
-			if (c == 0x9){ add_data({type:'tab'}) }
+			if (c == 0x9) add_data({type:'tab'})
 			else if (c == 12){ add_data({type:'pagebreak'}) }
 			else if (c == 0xB) R.push(empty())
 			else if (c < 0x10) console.log('unknown prefix:', c)
 			else if (c <= 0x15) add_text(lookup(c, s.charCodeAt(++i)))
 			else if (c == 0x20) add_text(' ')
-			else if (c < 0x21) processFormat()
+			else if (c < 0x21) { processFormat(); i++ }
 			else add_text(lookup(mode, c))
 		}
 		return R
