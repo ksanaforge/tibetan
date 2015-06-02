@@ -1,0 +1,60 @@
+DCT FILE FORMAT DESCRIPTION
+
+File is split in blocks, each block is separated by crlf 0x13, 0x10.
+
+First few blocks are headers and last block is text flow.
+
+Very first header block is version signature.
+Second block is default encoding code page. (AnsiTibetan is 0x10, TibetanAnsi is 0x11).
+Other headers are a set of string fields separated by tab.
+
+For instance:
+hdr TAB desiredfont TAB arial
+Desired font and encoding are the only headers we currently do not ignore.
+
+Last block has this format:
+1 TAB ! TAB (text flow).
+The number one here has unknown meaning, maybe there could be more text flows, but I never seen so. All pages are in the same text flow as much as I know.
+
+Now I describe the format of the text flow.
+All characters above 32 are the text in the default encoding.
+Characters 0x10-0x17 are code page selection for the next character. For instance 0x10 65 0x10 66 16 67 is the text "ABC". (It is hard to type hex on ipad so I may mix).
+The code page selection is only effective for a single character.
+Other codes under 32 are special codes.
+9 is tab.
+11 is new line.
+12 is new page.
+25 is extended command followed by data.
+
+Extended command has own syntax: SUBCODE ARGUMENTS
+
+Subcodes.
+For example 99 is a subcode for text color change.
+0x46 is a subcode for font parameters change.
+101 for center.
+98 for bold.
+105 for italic.
+Etc.
+
+Arguments.
+Arguments is a string. To know the length of an arguments string each character in it is preeceded by 27. So here is example command to select font size 18.
+
+25 0x46 27 '1' 27 32 27 '0' 27 32 27 '1' 27 '8'
+
+So basically arguments is just a 27-encoded string.
+In the above example the decoded arguments string is simply '1 0 18'.
+So 1, 0, 18 are subargs. 1 is a subcommand, 0 is open or close, 18 is font size.
+We only know two subcommands for the font params command:
+0 is select font face from table (followed by font number in the table).
+1 is select font size.
+Open/close is 0/1.
+18 is font size.
+
+Only font properties size and face has open/close bit. Other subcodes like bold or center are just flip-flop switch style.
+
+Thats it basically.
+
+END OF DCT FILE FORMAT DESCRIPTION
+
+
+Hope this helps. Please let me know if you have any questions.
