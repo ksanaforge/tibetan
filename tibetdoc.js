@@ -1,18 +1,37 @@
 /* originally written by exebook@gmail.com */
+/* 
+	paragraph alignment logic
+	1) center+ will not center current line, even if at line start
+		a) but will center the remaining characters in this line
+	2) center+ will center the line after LN
+	3) center- will start new line without LN
+	4) LN will carry out the formatting
+	5) rules 1-2-3 applt ro right+/- (true even for 1.a)
+	6) center+ is ignored between right+ and right-
+		a) right inside center will screw the text, and let it out of page
+	7) center+/right+ will modify next line of the same paragraph (word wrap)
+		this is not possible to mimic in json/html
+	1-7 were tested in reveal mode, but look different in normal mode
+--
+	8) fjust- will not start new line
+	9) fjust+ will justify current line
+*/
+
+var state = {}, hash = {}
+
 var states = {
 	bold: 98,italic: 105,underline: 117,strike: 111,
 	redline: 82,hilite1: 49,hilite2: 50,extra: 120,
 	very: 118,large: 108,small: 115,fine: 102,
 	left: 122,center: 101,right: 114,justify: 106,
 }
-var state = {}, hash = []
+
+var aligns = { 
+	center: 1, right: 1, left:1, justify: 1
+}
+
 for (var i in states) state[i] = false, hash[states[i]] = i
 
-if (module && module.exports) TibetDocConversionTable = eval('x='+require('fs').readFileSync('ansitable.js').toString())
-
-
-TibetDocConversionTable[17][32] = ' '
-// main function, provide NO extension to file name 
 
 TibetDocParse = function (D) {
 	var encoding = ''
@@ -34,8 +53,8 @@ TibetDocParse = function (D) {
 	function lookup(a, b) {
 		try {
 			if (a == 21 || a == 22) return '?2x'
-			if (TibetDocConversionTable[a]) {
-				var R = TibetDocConversionTable[a][b]
+			if (AnsiTibetan[a]) {
+				var R = AnsiTibetan[a][b]
 			}
 			if (R == undefined || R.length == 0) {
 				return '?'+a+'-'+b
@@ -86,7 +105,7 @@ TibetDocParse = function (D) {
 				// "Line indent", aka "i>>"
 				add_text(' ')
 				// add_data({type: 'tab'})
-			} else if (c == 25 && s.charCodeAt(i + 1) == 0x46) {
+			} else if (c == 25 && s.charCodeAt(i + 1) == 70) {
 				var n = read27()
 				if (n[0] == '0') add_data({
 						type: 'font',
@@ -106,102 +125,27 @@ TibetDocParse = function (D) {
 			}
 		}
 		
-		if (encoding == 'AnsiTibetan') mode = 0x10
-		if (encoding == 'TibetanAnsi') mode = 0x11
+		if (encoding == 'AnsiTibetan') mode = 16
+		if (encoding == 'TibetanAnsi') mode = 17
 		if (mode == 0) return 'Unknown encoding'
 		for (var i = 0; i < s.length; i++) {
 			var fontChanged = false
 			var c = s.charCodeAt(i)
-			if (c == 0x9) add_data({type:'tab'})
+//			console.log(i, c)
+//			if (i > 30) break
+			if (c == 9) add_data({type:'tab'})
 			else if (c == 12){ add_data({type:'pagebreak'}) }
-			else if (c == 0xB) R.push(empty())
-			else if (c < 0x10) console.log('unknown prefix:', c)
+			else if (c == 11) R.push(empty())
+			else if (c < 16) console.log('unknown prefix:', c)
 			else if (c <= 23) add_text(lookup(c, s.charCodeAt(++i)))
-			else if (c == 0x20) add_text(' ')
-			else if (c < 0x21) { processFormat(); i++ }
+			else if (c == 32) add_text(' ')
+			else if (c < 32) { processFormat() }
 			else add_text(lookup(mode, c))
 		}
 		return R
 	}
 }
 
-var css ="body {font-size:150%}\n"
-+"\tbold { font-weight: bold }\n"
-+"\titalic { font-style:italic }\n"
-+"\tunderline { text-decoration:underline }\n"
-+"\textra { font-size: 180% }\n"
-+"\tvery { font-size: 150% }\n"
-+"\tlarge { font-size: 120% }\n"
-+"\tsmall { font-size: 80% }\n"
-+"\tfine { font-size: 60% }\n"
-+"\tredline { text-decoration: none; border-bottom: 1px solid red; }\n"
-+"\thilite1 { color: 'red' }\n"
-+"\thilite2 { color: 'green' }\n"
-+"\n"
-+""
-
-formatHeader = function() {
-	return '<html><meta charset="utf8"><style>' + css + '</style>\n<body>'
-}
-function TibetDocJSONToHTML(J) {
-	var R = formatHeader()+TibetDocJSONToHTML_page(J)+"</body></html>";
-	return R
-}
-
-function TibetDocJSONToHTML_page(J) {
-	var R = [], style = {}, fonts = {}
-
-	for (var i = 0; i < J.length; i++) {
-		if (J[i].type == 'fonts') {
-			fonts = J[i].fonts
-		}
-		else if (J[i].para) {
-			var align = J[i].para.align
-			var F = J[i].flow, text = ''
-			for (var f = 0; f < F.length; f++) {
-				if (typeof F[f] == 'string') text += F[f]
-				else {
-//					if (F[f] == undefined) continue
-					console.log('->', F[f], f, i+'/'+J.length)
-					var tags = ['bold', 'italic', 'underline', 'strike', 'redline', 'hilite1', 'hilite2','extra','very','large','small','fine']
-					var stl = tags.indexOf(F[f].type)
-					if (stl >= 0) {
-						var tag = tags[stl]
-						style[F[f].type] = !style[F[f].type]
-						if (style[F[f].type]) text += '<'+tag+'>'
-						else text += '</'+tag+'>'
-					}
-					else if (F[f].type == 'font') {
-						if (F[f].begin) text += '<font face="'+fonts[F[f].id]+'">'
-						else text += '</font>'
-					}
-					else if (F[f].type == 'size') {
-						if (F[f].begin) text += '<font style="font-size:'+F[f].size+'pt">'
-						else text += '</font>'
-					}
-					else if (F[f].type == 'tab') {
-						text += '<code>&nbsp;&nbsp;</code>'
-					}
-					else if (F[f].type == 'pagebreak') {
-						text += '<hr style="page-break-after:always;margin-top:200px">'
-					}
-					else if (F[f].type == 'color') {
-						var C = parseInt(F[f].color).toString(16)
-						while (C.length < 6) C = '0' + C
-						var Z = C.substr(4,5) + C.substr(2,2) + C.substr(0,2)
-						text += '<color style="color: #'+Z+'">'
-					}
-					else if(['left','center','right','justify']
-						.indexOf(F[f].type) >= 0)
-						align = F[f].type
-				}
-			}
-			R.push('<p align="' + align + '"/>' + text)
-		}
-	}
-	var s = R.join('');
-	return s
-}
 var parseFile=function(fn) {
 	var fs=require("fs");
 	var str=fs.readFileSync(fn,'binary');
@@ -215,7 +159,15 @@ var convertFile=function(input) {
 	fs.writeFileSync(input+".html",html,"utf8");
 }
 if (typeof module!=="undefined") {
-	module.exports={JSONToHTML:TibetDocJSONToHTML, parse:TibetDocParse, parseFile:parseFile};
+	require('./tohtml')
+	AnsiTibetan = eval('x='+require('fs')
+		.readFileSync('ansitable.js').toString())
+	
+	module.exports = {
+		JSONToHTML:TibetDocJSONToHTML,
+		parse:TibetDocParse,
+		parseFile:parseFile
+	};
 
 	if (typeof process!=="undefined" && process.argv.length>2)	 {
 		convertFile(process.argv[2]);
