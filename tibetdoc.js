@@ -80,9 +80,12 @@ TibetDocParse = function (D) {
 			else flow.push(t)
 		}
 		function add_data(x) { 
-			if (['left','center','right','justify'].indexOf(x.type) >= 0) {
-				if (R[R.length - 1].para.align == x.type) R.push(empty())
-				else R[R.length - 1].para.align = x.type
+//			if (['left','center','right','justify'].indexOf(x.type) >= 0) {
+//				if (R[R.length - 1].para.align == x.type) R.push(empty())
+//				else R[R.length - 1].para.align = x.type
+//			}
+			if (aligns[x.type]) {
+				R[R.length - 1].para.align = x.type
 			}
 			else R[R.length - 1].flow.push(x)
 		}
@@ -131,8 +134,6 @@ TibetDocParse = function (D) {
 		for (var i = 0; i < s.length; i++) {
 			var fontChanged = false
 			var c = s.charCodeAt(i)
-//			console.log(i, c)
-//			if (i > 30) break
 			if (c == 9) add_data({type:'tab'})
 			else if (c == 12){ add_data({type:'pagebreak'}) }
 			else if (c == 11) R.push(empty())
