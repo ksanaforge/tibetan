@@ -73,6 +73,7 @@ function parseBlocks(dct, flowDecoder) {
 	;
 	var koul = {
 		encoding: '',
+		dct: dct,
 		fontList: [],
 		doc: [empty('left')]
 	}
@@ -148,11 +149,12 @@ function decoder(str, koul) {;
 			var tag = tags[subcode]
 			if (tag) {
 				if (tagState[tag]) delete tagState[tag]
-				else tagState[tag] = 1
-				add_data(koul, {
-					type: tag,
-					open: tagState[tag]
-				})
+				else tagState[tag] = 1;
+				var O = {
+					type: tag
+				}
+				if (tagState[tag]) O.open = true
+				add_data(koul, O)
 			}
 			else if (ali) {
 				if (ali == 'left') {
@@ -229,17 +231,35 @@ function dctToJson(binaryBlob) {;
 }
 
 if (typeof (module) != 'undefined') {;
-	var fs = require('fs');
-	var fname = 'heap/Justifications.dct';
-	var fname = 'color.dct'
-		//fname ∆ '/y/tibetdoc/tibetan/heap/dct/1om.dct'
-		//fname ∆ 'heap/charbug.dct'
-	s = fs.readFileSync(fname, 'binary').toString()
+	var fs = require('fs')
+	try {
+		require('./html')
+	}
+	catch (e) {
+		require('html.yy')
+	}
 	AnsiTibetan = eval('x=' + fs.readFileSync('ansitable.js').toString())
-	require('html.yy');
-	var H = parseBlocks(s, decoder)
-	fs.writeFileSync('Justify.json', JSON.stringify(H, 0, ' '))
-	fs.writeFileSync('Justify.html', toHTML(H))
+
+	function parseFile(fname) {
+		return dctToJson(fs.readFileSync(fname, 'binary').toString())
+	}
+
+	;
+	var convertFile = function (input) {;
+		var json = parseFile(input);
+		var html = toHTML(json)
+		fs.writeFileSync(input + '.html', html, 'utf8')
+	}
+
+	module.exports = {
+		JSONToHTML: toHTML,
+		parse: dctToJson,
+		parseFile: parseFile
+	}
+
+	if (typeof (process) != 'undefined' && process.argv.length > 2)
+		convertFile(process.argv[2])
+
 }
 else {
 	window.TibetDoc = {

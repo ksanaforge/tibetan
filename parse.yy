@@ -37,7 +37,7 @@ aligns ∆ {
 
 	ロ'Blocks found:', dct ↥ + '.'
 	
-	koul ∆ { encoding:'', fontList: [], doc:[ empty('left') ] }
+	koul ∆ { encoding:'', dct: dct, fontList: [], doc:[ empty('left') ] }
 	i ⬌ dct {
 		L ∆ dctⁱ⌶(∼◬9)
 		⌥ (i ≟ 1) koul.encoding = L⁶, ロ 'Encoding:', koul.encoding
@@ -109,7 +109,9 @@ aligns ∆ {
 			⌥ (tag) {
 				⌥ (tagState[tag]) ⏀ tagState[tag]
 				⎇ tagState[tag] = 1
-				add_data(koul, { type: tag, open: tagState[tag] })
+				O ∆ { type: tag }
+				⌥ (tagState[tag]) O.open = ⦿
+				add_data(koul, O)
 			}
 			⥹ (ali) {
 				⌥ (ali ≟ 'left') {
@@ -175,17 +177,28 @@ aligns ∆ {
 }
 
 ⌥ (⬤module ≠ '∅') {
-	fs ∆≣'fs'
-	fname ∆ 'heap/Justifications.dct'
-	fname ∆ 'color.dct'
-	//fname ∆ '/y/tibetdoc/tibetan/heap/dct/1om.dct'
-	//fname ∆ 'heap/charbug.dct'
-	s = ⛁(fname, 'binary')≂
+	fs ∆ ≣'fs'
+	try { ≣'./html' } catch(e) { ≣ 'html.yy' }
 	AnsiTibetan = eval('x='+⛁'ansitable.js'≂)
-	≣ 'html.yy'
-	H ∆ parseBlocks(s, decoder)
-	⛃('Justify.json', ꗌ(H,0,' '))
-	⛃('Justify.html', toHTML(H))
+
+	➮ parseFile fname {
+		$ dctToJson(⛁(fname, 'binary')≂)
+	}
+	
+	convertFile ∆ ➮ (input) {
+		json ∆ parseFile(input)
+		html ∆ toHTML(json)
+		⛃ (input + '.html', html, 'utf8')
+	}
+
+	module.exports = {
+		JSONToHTML:toHTML,
+		parse:dctToJson,
+		parseFile:parseFile
+	}
+	
+	⌥ (⬤ process != '∅' && process.argv↥ > 2) convertFile(process.argv²)
+	
 } else {
 	window.TibetDoc = { Parse:dctToJson, JSONToHTML:toHTML };
 }

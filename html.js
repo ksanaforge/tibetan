@@ -16,7 +16,16 @@ toHTML = function (a, b, c) {;
 	var pairTags = {
 		bold: 1,
 		italic: 1,
-		underline: 1
+		underline: 1,
+		small: 1,
+		large: 1,
+		very: 1,
+		extra: 1,
+		fine: 1,
+		hilite1: 1,
+		hilite2: 1,
+		strike: 1,
+		redline: 1
 	}
 	for (var i = 0; i < a.doc.length; i++) {
 		para = a.doc[i];
@@ -35,6 +44,7 @@ toHTML = function (a, b, c) {;
 					if (tag.type == 'bold') s = 'b'
 					else if (tag.type == 'underline') s = 'u'
 					else if (tag.type == 'italic') s = 'i'
+					else s = tag.type
 					if (!tag.open) s = '/' + s
 					html.push('<' + s + '>')
 				}

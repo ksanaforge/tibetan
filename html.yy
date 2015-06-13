@@ -16,7 +16,9 @@ css ∆ 'body {font-size:200%;font-family:"microsoft himalaya";margin-left:100px
 
 toHTML = ➮ {
 	html ∆ []
-	pairTags ∆ { bold:1, italic:1, underline:1 }
+	pairTags ∆ { 
+		bold:1, italic:1, underline:1, small:1, large:1,
+		very:1, extra:1, fine:1, hilite1:1, hilite2:1, strike:1, redline:1 }
 	i ⬌ a.doc {
 		para = a.docⁱ
 		flow ∆ para.flow
@@ -34,6 +36,7 @@ toHTML = ➮ {
 					⌥ (tag.type ≟ 'bold') s = 'b'
 					⥹ (tag.type ≟ 'underline') s = 'u'
 					⥹ (tag.type ≟ 'italic') s = 'i'
+					⎇ s = tag.type
 					⌥ (!tag.open) s = '/' + s
 					html ⬊ ('<' + s + '>')
 				}
@@ -62,3 +65,4 @@ toHTML = ➮ {
 	}
 	$ '<html><meta charset="utf8"><style>' + css + '</style>\n<body>' + html⫴''
 }
+
