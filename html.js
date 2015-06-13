@@ -4,9 +4,9 @@ var css =
 	'\tbold { font-weight: bold }\n' +
 	'\titalic { font-style:italic }\n' +
 	'\tunderline { text-decoration:underline }\n' +
-	'\textra { font-size: 180% }\n' + '\tvery { font-size: 150% }\n' +
-	'\tlarge { font-size: 120% }\n' + '\tsmall { font-size: 80% }\n' +
-	'\tfine { font-size: 60% }\n' +
+	'\textra { font-size: 200% }\n' + '\tvery { font-size: 170% }\n' +
+	'\tlarge { font-size: 120% }\n' + '\tsmall { font-size: 60% }\n' +
+	'\tfine { font-size: 40% }\n' +
 	'\tredline { text-decoration: none; border-bottom: 1px solid red; }\n' +
 	'\thilite1 { color: "red" }\n' + '\thilite2 { color: "green" }\n' +
 	'\tp { text-indent: 0px }\n' + '\n' + ''
@@ -41,10 +41,7 @@ toHTML = function (a, b, c) {;
 				var tag = flow[f];
 				var s = ''
 				if (pairTags[tag.type]) {
-					if (tag.type == 'bold') s = 'b'
-					else if (tag.type == 'underline') s = 'u'
-					else if (tag.type == 'italic') s = 'i'
-					else s = tag.type
+					s = tag.type
 					if (!tag.open) s = '/' + s
 					html.push('<' + s + '>')
 				}
