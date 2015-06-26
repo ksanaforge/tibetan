@@ -238,7 +238,8 @@ if (typeof (module) != 'undefined') {;
 	catch (e) {
 		require('html.yy')
 	}
-	AnsiTibetan = eval('x=' + fs.readFileSync('ansitable.js').toString())
+	AnsiTibetan = eval('x=' + fs.readFileSync(__dirname +
+		'/ansitable.js').toString())
 
 	function parseFile(fname) {
 		return dctToJson(fs.readFileSync(fname, 'binary').toString())

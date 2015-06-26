@@ -179,7 +179,7 @@ aligns ∆ {
 ⌥ (⬤module ≠ '∅') {
 	fs ∆ ≣'fs'
 	try { ≣'./html' } catch(e) { ≣ 'html.yy' }
-	AnsiTibetan = eval('x='+⛁'ansitable.js'≂)
+	AnsiTibetan = eval('x='+⛁(__dirname+'/ansitable.js')≂)
 
 	➮ parseFile fname {
 		$ dctToJson(⛁(fname, 'binary')≂)
