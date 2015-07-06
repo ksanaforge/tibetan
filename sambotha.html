@@ -2,6 +2,7 @@
 <head>
 <meta charset="utf8">
 </head>
+<script src="jszip.min.js"></script>
 <script src="sambotha.js"></script>
 <script>
 var r = new FileReader();
@@ -12,7 +13,7 @@ function act() {
 		
 		var z = new JSZip(data);
 		var xml = z.file("word/document.xml").asText()
-		var doc = parse(xml)
+		var doc = docxParse(xml)
 		data = sambodhaConvert(doc)
 		
 		output.innerHTML = data
@@ -23,6 +24,7 @@ function act() {
 		downLink.href = url
 		downLink.target = '_blank'
 		downLink.innerHTML = 'Download'
+		downLink.download = "convertedDocument.txt"
 	}
 	r.readAsBinaryString(file);	
 }
