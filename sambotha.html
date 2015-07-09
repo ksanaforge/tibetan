@@ -13,13 +13,14 @@ function act() {
 		
 		var z = new JSZip(data);
 		var xml = z.file("word/document.xml").asText()
-		var doc = docxParse(xml)
-		data = sambodhaConvert(doc)
-		
+
+		var doc = docxToJson(xml)
+		toUnicode(doc)
+		data = jsonToHtml(doc)
+
 		output.innerHTML = data
 		data = '<meta charset=utf-8>\n' + data
 		var b = new Blob([data], { encoding:'utf-8',type:'text/html' });
-//		console.log('blob', JSON.stringify(b))
 		var url = URL.createObjectURL(b);
 		downLink.href = url
 		downLink.target = '_blank'
