@@ -1,5 +1,5 @@
 var inFileName = 'Sambhota character.docx'
-var outFileName = 'firstConverted.txt'
+var outFileName = 'Output.html'
 
 
 fs=require('fs')
@@ -15,12 +15,13 @@ var xml = zip.file("word/document.xml").asText()
 
 console.log('- unzip', xml.length, 'characters.')
 
-var doc = sambotha.parse(xml)
+var doc = sambotha.docxToJson(xml)
+sambotha.toUnicode(doc)
+var htm = sambotha.jsonToHtml(doc)
 
-console.log('-', doc.fonts.length, 'fonts,', doc.text.length, 'paragraphs.')
+console.log('-', doc.fonts.length, 'fonts,', doc.text.length, 'text runs.')
 
-var uni = sambotha.convert(doc)
-fs.writeFileSync(outFileName, uni)
+fs.writeFileSync(outFileName, htm)
 
-console.log('- writing', '"'+outFileName+'"', uni.length, 'characters.')
+console.log('- writing', '"'+outFileName+'"', htm.length, 'characters.')
 

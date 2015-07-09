@@ -1,17 +1,22 @@
+/*
+	Do not edit, this is obsolete, replaced by html.js(yy)
+*/
+
 var css ="body {font-size:150%}\n"
-+"\tbold { font-weight: bold }\n"
-+"\titalic { font-style:italic }\n"
-+"\tunderline { text-decoration:underline }\n"
-+"\textra { font-size: 180% }\n"
-+"\tvery { font-size: 150% }\n"
-+"\tlarge { font-size: 120% }\n"
-+"\tsmall { font-size: 80% }\n"
-+"\tfine { font-size: 60% }\n"
-+"\tredline { text-decoration: none; border-bottom: 1px solid red; }\n"
-+"\thilite1 { color: 'red' }\n"
-+"\thilite2 { color: 'green' }\n"
-+"\n"
-+""
+//TODO: remove completely (and test if ok)
+//+"\tbold { font-weight: bold }\n"
+//+"\titalic { font-style:italic }\n"
+//+"\tunderline { text-decoration:underline }\n"
+//+"\textra { font-size: 180% }\n"
+//+"\tvery { font-size: 150% }\n"
+//+"\tlarge { font-size: 120% }\n"
+//+"\tsmall { font-size: 80% }\n"
+//+"\tfine { font-size: 60% }\n"
+//+"\tredline { text-decoration: none; border-bottom: 1px solid red; }\n"
+//+"\thilite1 { color: 'red' }\n"
+//+"\thilite2 { color: 'green' }\n"
+//+"\n"
+//+""
 
 formatHeader = function() {
 	return '<html><meta charset="utf8"><style>' + css + '</style>\n<body>'
@@ -42,6 +47,7 @@ function TibetDocJSONToHTML_page(J) {
 						style[F[f].type] = !style[F[f].type]
 						if (style[F[f].type]) text += '<'+tag+'>'
 						else text += '</'+tag+'>'
+						//TODO: replace with inline <font size=NNN> etc
 					}
 					else if (F[f].type == 'font') {
 						if (F[f].begin) text += '<font face="'+fonts[F[f].id]+'">'
