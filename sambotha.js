@@ -100,6 +100,7 @@ function  convertStringWithFont    (s,fontTable,vowel) {
 		if (C) R += C + vowel
 		else  R += ' '
 	}
+	R = R.replace(/་ /g, '་') // docx tseg+space problem.
 	return  R
 }
 
