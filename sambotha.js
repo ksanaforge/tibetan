@@ -37,7 +37,18 @@ function  parse (a,b,c) {
 		}
 		return  {}
 	}
-	
+
+	 for(var i = 0; i < L.length; i++){
+		// remove &amp; etc
+		;var s  =  L[i]
+		s = s .split ('&amp;' ).join ('&')
+		s = s .split ('&lt;' ).join ('<')
+		s = s .split ('&gt;' ).join ('>')
+		s = s .split ('&quot;' ).join ('"')
+		s = s .split ('&apos;' ).join ("'")
+		L[i] = s
+	}
+
 	;var curSize  =  undefined
 	;var curFont  =  undefined
 	 for(var m = 0; m < M.length; m++){
