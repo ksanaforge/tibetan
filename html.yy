@@ -68,7 +68,7 @@ toHTML = ➮ {
 					⌥ (tag.begin) html ⬊ ('<font face="'+a.fontList[tag.id]+'">')
 					⎇ html ⬊ '</font>'
 				}
-				⥹ (tag.type == 'size') {
+				⥹ (tag.type == 'size') {//todo: check if can be open/close at all
 					⌥ (tag.begin) html ⬊ ('<font style="font-size:'+tag.size+'pt">')
 					⎇ html ⬊ '</font>'
 				}

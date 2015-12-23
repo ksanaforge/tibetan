@@ -1,0 +1,36 @@
+<html>
+<head>
+<meta charset="utf8">
+</head>
+<script src="jszip.min.js"></script>
+<script src="sambotha.js"></script>
+<script>
+var r = new FileReader();
+function act() {
+	var file = fileInput.files[0]
+	r.onload = function() {
+		var data = r.result
+		
+		var z = new JSZip(data);
+		var xml = z.file("word/document.xml").asText()
+
+		var doc = docxToJson(xml)
+		toUnicode(doc)
+		data = jsonToHtml(doc)
+
+		output.innerHTML = data
+		data = '<meta charset=utf-8>\n' + data
+		var b = new Blob([data], { encoding:'utf-8',type:'text/html' });
+		var url = URL.createObjectURL(b);
+		downLink.href = url
+		downLink.target = '_blank'
+		downLink.innerHTML = 'Download'
+		downLink.download = "convertedDocument.txt"
+	}
+	r.readAsBinaryString(file);	
+}
+</script>
+<h1>Sambotha to unicode converter</h1>
+<input type="file" id="fileInput" onchange=act() accept='.docx'>
+<a id=downLink></a>
+<hr><div style="font-size:18pt;font-family:Microsoft Himalaya;" id=output></div>
