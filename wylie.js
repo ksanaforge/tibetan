@@ -1845,14 +1845,24 @@ function toWylie(str, warns, escape) {
 	}
 	return out;
 }
+var fromWylieWithWildcard=function(wy) {
+	wy=wy.replace(/\./g,"．");
+	wy=wy.replace(/\*/g,"※");
+	var r=fromWylie(wy);
+	r=r.replace(/※/g,"*");
+	r=r.replace(/．/g,"?");
+	r=r.replace(/([\*\?])([༠༡༢༣༤༥༦༧༨༩])/g,function(m,m1,m2){
+		return m1+String.fromCharCode(m2.charCodeAt(0)-0x0EF0);
+	});
+	return r;
+}
+
 module.exports= {
 		fromWylie: fromWylie,
+		fromWylieWithWildcard: fromWylieWithWildcard,
 		toWylie: toWylie,
 		setopt: setopt,
 		getopt: function() { return opt },
-		five: function() {
-			return 555;
-		}
 }
 
 
