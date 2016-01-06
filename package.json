@@ -1,6 +1,6 @@
 {
   "name": "tibetan",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "Tibetan proprietary formats and transliteration",
   "main": "index.js",
   "scripts": {
