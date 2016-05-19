@@ -27,7 +27,8 @@ function  parse (a,b,c) {
 		if (a.match(x)) {
 			;var xf  =  new  RegExp('w:hAnsi="([^"]*)"')
 			;var m  =  xf.exec(a)
-			return  {type:'font', id:addFont(m[1])}
+			if (!m || !m[1]) return {};
+			else return  {type:'font', id:addFont(m[1])}
 		}
 		;var x  =  '<w:sz [^>]*>'
 		if (a.match(x)) {
@@ -72,19 +73,33 @@ function  parse (a,b,c) {
 }
 
 function  toHtml  (json) {
-	;var R  =  '<html>'
-	;var setFont  =  {}
-	;var curFont  =  {}
-	 for(var i = 0; i < json.text.length; i++){
-		;var o  =  json.text[i]
+	var R  =  '<html>';
+	var setFont  =  {};
+	var curFont  =  {};
+	var prevfont,prevsize;
+	for(var i = 0; i < json.text.length; i++){
+		var o  =  json.text[i];
 		if (o == undefined) continue;
 		if ((typeof  o.text != "undefined")) {
-			;var f  =  []
-			if ((typeof o.font != "undefined")) f .push ('font-family:"' + json.fonts[o.font] + '";')
-			if ((typeof o.size != "undefined")) f .push ('font-size:' + o.size+'pt;')
-			R += '<span style=\'' + f.join('' )+ '\'>' + o.text + '</span>'
+			var f  =  [];
+
+			if ((typeof o.font != "undefined")&&(prevfont!==o.font)) {
+				f.push ('font-family:"' + json.fonts[o.font] + '";')
+				prevfont=o.font;
+			}
+			if ((typeof o.size != "undefined")&&(prevsize!==o.size)) {
+				f.push ('font-size:' + o.size+'pt;');
+				prevsize=o.size;
+			}
+
+			if (f.length){
+				R += '</span><span style=\'' + f.join('' )+ '\'>' + o.text;
+			} else {
+				R+=o.text;
+			}
+
 		} else if (o.type == 'par') {
-			R += '<p>'
+			R += '\n<p>'
 		}
 	}
 	R += '</html>'
@@ -111,7 +126,7 @@ function  convertStringWithFont    (s,fontTable,vowel) {
 		if (C) R += C + vowel
 		else  R += ' '
 	}
-	R = R.replace(/་ /g, '<font color=red>་</font>') // docx tseg+space problem.
+	//R = R.replace(/་ /g, '<font color=red>་</font>') // docx tseg+space problem.
 	return  R
 }
 
