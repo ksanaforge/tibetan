@@ -1846,7 +1846,7 @@ function toWylie(str, warns, escape) {
 	return out;
 }
 var fromWylieWithWildcard=function(wy) {
-	wy=wy.replace(/\./g,"．");
+    wy = wy.replace(/((?!\bg).)\./g, "$1．");
 	wy=wy.replace(/\*/g,"※");
 	var r=fromWylie(wy);
 	r=r.replace(/※/g,"*");
